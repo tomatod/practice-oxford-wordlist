@@ -1,0 +1,43 @@
+.AppHeader {
+  padding: 0px 16px;
+  display: flex;
+  justify-content: center;
+  font-size: 1rem;
+  border-bottom: 1px solid;
+}
+
+.AppHeaderInner {
+  height: 48px;
+  max-width: 980px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.AppHeaderPageTitle {
+  font-weight: 600;
+  font-size: 1.5em;
+}
+
+.AppContent {
+  margin: 1rem;
+  font-size: 1rem;
+}
+
+.AppContentInner {
+  margin: 0 auto;
+  max-width: 980px;
+}
+
+.WordList table {
+  margin-top: 1em;
+  font-size: 1.1rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.WordList th,
+td {
+  border: 1px solid;
+  padding: 0.5em 0.5em;
+}
