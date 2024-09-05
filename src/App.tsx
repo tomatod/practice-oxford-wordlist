@@ -173,7 +173,7 @@ const getWordListItemsAsnc = async (): Promise<WordListItem[]> => {
 
 const getOriginWordListItemsAsnc = async (): Promise<WordListItem[]> => {
   console.log("try to get clean data.");
-  const url = "/origin.json";
+  const url = "origin.json";
   try {
     const response = await fetch(url);
     if (!response.ok) {
