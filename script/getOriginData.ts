@@ -12,7 +12,9 @@ async function getOriginData() {
   const wordList: WordListItem[] = [];
   $(".top-g > li[data-ox3000]").map((_, el) => {
     const word = $(el).attr("data-hw") ?? "";
-    const link = "https://www.oxfordlearnersdictionaries.com/" + $(el).find("a").attr("href") ?? "";
+    const link =
+      "https://www.oxfordlearnersdictionaries.com/" +
+      ($(el).find("a").attr("href") ?? "");
     const wordClass = $(el).find("span[class='pos']").text() ?? "";
     const level = $(el).attr("data-ox5000") ?? "";
     const wordListItem: WordListItem = {
