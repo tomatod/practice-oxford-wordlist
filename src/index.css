@@ -14,3 +14,9 @@ ul {
   margin: 0px;
   padding: 0px;
 }
+
+a,
+a:hover,
+a:visited {
+  color: inherit;
+}

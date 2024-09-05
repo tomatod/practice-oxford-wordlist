@@ -21,7 +21,7 @@ async function getOriginData() {
       word: word,
       link: link,
       wordClass: wordClass,
-      level: level,
+      level: level.toUpperCase(),
       read: false,
       got: false,
       count: 0,

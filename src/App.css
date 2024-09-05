@@ -11,12 +11,19 @@
   max-width: 980px;
   width: 100%;
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
 .AppHeaderPageTitle {
   font-weight: 600;
   font-size: 1.5em;
+}
+
+.AppHeaderMenu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .AppContent {

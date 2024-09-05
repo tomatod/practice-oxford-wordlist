@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { MarkGithubIcon } from "@primer/octicons-react";
 import "./App.css";
 import { WordListItem } from "../type/type";
 
@@ -21,6 +22,14 @@ const AppHeader = () => {
       <div className="AppHeaderInner">
         <div className="AppHeaderPageTitle">
           <span>Practice Oxford Wordlist</span>
+        </div>
+        <div className="AppHeaderMenu">
+          <a
+            href="https://github.com/tomatod/practice-oxford-wordlist"
+            target="_blank"
+          >
+            <MarkGithubIcon size={24} />
+          </a>
         </div>
       </div>
     </div>
@@ -93,11 +102,11 @@ const WordListTable = (props: WordListTableProps) => {
       <table>
         <thead>
           <tr>
-            <th>word</th>
-            <th>level</th>
-            <th>read</th>
-            <th>got</th>
-            <th>count</th>
+            <th>WORD</th>
+            <th>CEFR</th>
+            <th>👀</th>
+            <th>✅</th>
+            <th>🖱</th>
           </tr>
         </thead>
         <tbody>{tbodyInner}</tbody>
