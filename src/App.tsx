@@ -190,8 +190,8 @@ const getOriginWordListItemsAsnc = async (): Promise<WordListItem[]> => {
 };
 
 const saveDiffOfWordList = (newItem: WordListItem) => {
-  const items = JSON.parse(localStorage.getItem("items"));
-  const newItems = items.map((oldItem) => {
+  const items = JSON.parse(localStorage.getItem("items") ?? "");
+  const newItems = items.map((oldItem: WordListItem) => {
     if (
       oldItem.word === newItem.word &&
       oldItem.wordClass === newItem.wordClass &&
