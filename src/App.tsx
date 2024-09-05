@@ -36,16 +36,12 @@ const AppContent = () => {
     };
     f();
   }, []);
-  const setAndSaveItems = (items: WordListItem[]) => {
-    setItems(items);
-    saveWordListItems(items);
-  };
   return (
     <div className="AppContent">
       <div className="AppContentInner">
         <Description />
         <SearchBar />
-        <WordListTable items={items} setItems={setAndSaveItems} />
+        <WordListTable items={items} />
       </div>
     </div>
   );
@@ -75,32 +71,20 @@ const SearchBar = () => {
 
 type WordListTableProps = {
   items: WordListItem[];
-  setItems: (items: WordListItem[]) => void;
 };
 
 const WordListTable = (props: WordListTableProps) => {
   const tbodyInner = props.items.map((item: WordListItem) => {
-    const setItem = (item: WordListItem) => {
-      const newItems = props.items.map((old) => {
-        if (old.word + old.wordClass + old.level === item.word + item.wordClass + item.level) {
-          return item;
-        } else {
-          return old;
-        }
-      });
-      props.setItems(newItems);
-    };
     return (
       <WordListItemTableRecord
         key={item.word + item.wordClass + item.level}
         word={item.word}
         link={item.link}
-				wordClass={item.wordClass}
+        wordClass={item.wordClass}
         level={item.level}
         read={item.read}
         got={item.got}
         count={item.count}
-        setItem={setItem}
       />
     );
   });
@@ -123,24 +107,29 @@ const WordListTable = (props: WordListTableProps) => {
 };
 
 // TODO: use one in type.ts
-type WordListItemProps = WordListItem & {
-  setItem: (item: WordListItem) => void;
-};
+type WordListItemProps = WordListItem;
 
 const WordListItemTableRecord = (props: WordListItemProps) => {
-  const item = { ...props };
+  const [item, setItem] = useState<WordListItem>({ ...props });
+  const onChangeItem = (item: WordListItem) => {
+    setItem(item);
+    saveDiffOfWordList(item);
+  };
   const onChangeReadStatus = (read: boolean) => {
-    item.read = read;
-    props.setItem(item);
+    const newItem = { ...item };
+    newItem.read = read;
+    onChangeItem(newItem);
   };
   const onChangeGotStatus = (got: boolean) => {
-    item.got = got;
-    props.setItem(item);
+    const newItem = { ...item };
+    newItem.got = got;
+    onChangeItem(newItem);
   };
   const onClickLink = () => {
-    item.read = true;
-    item.count++;
-    props.setItem(item);
+    const newItem = { ...item };
+    newItem.read = true;
+    newItem.count++;
+    onChangeItem(newItem);
   };
   return (
     <tr>
@@ -173,9 +162,13 @@ const WordListItemTableRecord = (props: WordListItemProps) => {
 	Functions for getting and saving word list.
  **/
 const getWordListItemsAsnc = async (): Promise<WordListItem[]> => {
-  const rawItems = localStorage.getItem("items");
-  if (rawItems === null) return getOriginWordListItemsAsnc();
-  return JSON.parse(rawItems);
+  const itemsRaw: string | null = localStorage.getItem("items");
+  if (itemsRaw === null) {
+    const items = await getOriginWordListItemsAsnc();
+    localStorage.setItem("items", JSON.stringify(items));
+    return items;
+  }
+  return JSON.parse(itemsRaw);
 };
 
 const getOriginWordListItemsAsnc = async (): Promise<WordListItem[]> => {
@@ -189,13 +182,25 @@ const getOriginWordListItemsAsnc = async (): Promise<WordListItem[]> => {
     }
     return await response.json();
   } catch (error: unknown) {
-		if (error instanceof Error) {
-    	alert(error.message);
-		}
+    if (error instanceof Error) {
+      alert(error.message);
+    }
     return [];
   }
 };
 
-const saveWordListItems = (items: WordListItem[]) => {
-  localStorage.setItem("items", JSON.stringify(items));
+const saveDiffOfWordList = (newItem: WordListItem) => {
+  const items = JSON.parse(localStorage.getItem("items"));
+  const newItems = items.map((oldItem) => {
+    if (
+      oldItem.word === newItem.word &&
+      oldItem.wordClass === newItem.wordClass &&
+      oldItem.level === newItem.level
+    ) {
+      return newItem;
+    } else {
+      return oldItem;
+    }
+  });
+  localStorage.setItem("items", JSON.stringify(newItems));
 };
