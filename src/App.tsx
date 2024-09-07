@@ -102,11 +102,11 @@ const WordListTable = (props: WordListTableProps) => {
       <table>
         <thead>
           <tr>
-            <th>WORD</th>
-            <th>CEFR</th>
-            <th>👀</th>
-            <th>✅</th>
-            <th>🖱</th>
+            <th></th>
+            <th className="WordListInteraction"></th>
+            <th className="WordListInteraction">👀</th>
+            <th className="WordListInteraction">✅</th>
+            <th className="WordListInteraction">🖱</th>
           </tr>
         </thead>
         <tbody>{tbodyInner}</tbody>
@@ -147,22 +147,24 @@ const WordListItemTableRecord = (props: WordListItemProps) => {
           {props.word}
         </a>
       </td>
-      <td>{item.level}</td>
-      <td>
+      <td className="WordListInteraction">
+        <span className="CefrDecoration">{item.level}</span>
+      </td>
+      <td className="WordListInteraction">
         <input
           type="checkbox"
           checked={item.read}
           onChange={(e) => onChangeReadStatus(e.target.checked)}
         />
       </td>
-      <td>
+      <td className="WordListInteraction">
         <input
           type="checkbox"
           checked={item.got}
           onChange={(e) => onChangeGotStatus(e.target.checked)}
         />
       </td>
-      <td>{item.count}</td>
+      <td className="WordListInteraction">{item.count}</td>
     </tr>
   );
 };

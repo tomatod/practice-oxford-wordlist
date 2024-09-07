@@ -48,3 +48,16 @@ td {
   border: 1px solid;
   padding: 0.5em 0.5em;
 }
+
+.WordListInteraction {
+  text-align: center;
+}
+
+.CefrDecoration {
+  padding: 0em 0.5em;
+  border-radius: 4px;
+  color: #ffffff;
+  background: #808080;
+  font-weight: 600;
+  font-size: 0.8em;
+}
