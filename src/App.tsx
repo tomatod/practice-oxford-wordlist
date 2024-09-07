@@ -104,9 +104,9 @@ const WordListTable = (props: WordListTableProps) => {
           <tr>
             <th></th>
             <th className="WordListInteraction"></th>
-            <th className="WordListInteraction">👀</th>
-            <th className="WordListInteraction">✅</th>
             <th className="WordListInteraction">🖱</th>
+            <th className="WordListInteraction">✅</th>
+            <th className="WordListInteraction">👀</th>
           </tr>
         </thead>
         <tbody>{tbodyInner}</tbody>
