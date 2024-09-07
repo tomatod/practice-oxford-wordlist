@@ -36,8 +36,64 @@
   max-width: 980px;
 }
 
-.WordList table {
+.SearchBar {
   margin-top: 1em;
+}
+
+.SearchInput {
+  /*
+  display: flex;
+  justify-content: left;
+  align-items: center;
+	*/
+  font-size: 1.2em;
+}
+
+.SearchInput label {
+  display: block;
+}
+
+.SearchOptionList label {
+  margin-right: 0.7em;
+  border: 1px solid #666666;
+  padding: 0.1em 0.5em 0.2em;
+  margin-right: 0.5em;
+  color: #777777;
+  font-weight: 600;
+}
+
+.SearchInput input[type="checkbox"] {
+  vertical-align: middle;
+  margin: 0px;
+  margin-right: 0.3em;
+}
+
+.SearchText {
+  font-size: 1.1em;
+  border: 1px solid #000000;
+  padding: 0.1em 0.4em 0.2em;
+}
+
+.SearchText input[type="text"] {
+  margin: 0em 0.5em;
+  padding: 0em;
+  font-size: 1em;
+  outline: none;
+  border: #ffffff;
+}
+
+.SearchOptionList {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin: 0.5em 0em;
+}
+
+.WordList {
+  margin-top: 0.5em;
+}
+
+.WordList table {
   font-size: 1.1rem;
   width: 100%;
   border-collapse: collapse;

@@ -38,6 +38,13 @@ const AppHeader = () => {
 
 const AppContent = () => {
   const [items, setItems] = useState<WordListItem[]>([]);
+  const [keyword, setKeyword] = useState<string>("");
+  const [isVisibleReadItem, setVisiblityOfReadItem] = useState<boolean>(true);
+  const [isVisibleGotItem, setVisiblityOfGotItem] = useState<boolean>(true);
+  const setAndSaveItems = (items: WordListItem[]): void => {
+    setItems(items);
+    saveWordList(items);
+  };
   useEffect(() => {
     const f = async () => {
       const is: WordListItem[] = await getWordListItemsAsnc();
@@ -49,8 +56,20 @@ const AppContent = () => {
     <div className="AppContent">
       <div className="AppContentInner">
         <Description />
-        <SearchBar />
-        <WordListTable items={items} />
+        <SearchBar
+          isVisibleReadItem={isVisibleReadItem}
+          isVisibleGotItem={isVisibleGotItem}
+          setKeyword={setKeyword}
+          setVisiblityOfReadItem={setVisiblityOfReadItem}
+          setVisiblityOfGotItem={setVisiblityOfGotItem}
+        />
+        <WordListTable
+          items={items}
+          setItems={setAndSaveItems}
+          keyword={keyword}
+          isVisibleReadItem={isVisibleReadItem}
+          isVisibleGotItem={isVisibleGotItem}
+        />
       </div>
     </div>
   );
@@ -74,16 +93,107 @@ const Description = () => {
   );
 };
 
-const SearchBar = () => {
-  return <div></div>;
+type SearchBarProps = {
+  isVisibleReadItem: boolean;
+  isVisibleGotItem: boolean;
+  setKeyword: (keyword: string) => void;
+  setVisiblityOfGotItem: (visiblity: boolean) => void;
+  setVisiblityOfReadItem: (visiblity: boolean) => void;
+};
+const SearchBar = (props: SearchBarProps) => {
+  const onChangeKeyword = (v: string) => {
+    props.setKeyword(v);
+  };
+  const onChangevisiblityOfGotItem = (v: boolean) => {
+    props.setVisiblityOfGotItem(v);
+  };
+  const onChangevisiblityOfReadItem = (v: boolean) => {
+    props.setVisiblityOfReadItem(v);
+  };
+  return (
+    <div className="SearchBar">
+      <div className="SearchInput">
+        <div className="SearchText">
+          <label>
+            🔍
+            <input
+              type="text"
+              placeholder="look up words"
+              onChange={(e) => onChangeKeyword(e.target.value)}
+            />
+          </label>
+        </div>
+        <div className="SearchOptionList">
+          <label>
+            <input
+              type="checkbox"
+              onChange={(e) => onChangevisiblityOfGotItem(e.target.checked)}
+              checked={props.isVisibleGotItem}
+            />
+            memorized
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              onChange={(e) => onChangevisiblityOfReadItem(e.target.checked)}
+              checked={props.isVisibleReadItem}
+            />
+            clicked
+          </label>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 type WordListTableProps = {
   items: WordListItem[];
+  keyword: string;
+  isVisibleReadItem: boolean;
+  isVisibleGotItem: boolean;
+  setItems: (items: WordListItem[]) => void;
 };
 
+const getNewItems = (() => {
+	let items = [];
+	return (newItems?: WordListItem[], newItem?: WordListItem) => {
+		if(newItems !== undefined) {
+			items = ni;
+			return items;
+		}
+		if(newItem !== undefined) {
+			items = props.items.map((oldItem) => {
+				const newKey = newItem.word + newItem.wordClass + newItem.level;
+				const oldKey = oldItem.word + oldItem.wordClass + oldItem.level;
+				if(newKey === oldKey) {
+					return newItem;
+				} else {
+					return oldItem;
+				}
+			});
+			return items;	
+		}
+		return items;
+	};
+})();
 const WordListTable = (props: WordListTableProps) => {
+  const setItem = (newItem: WordListItem) => {
+    const newItems = props.items.map((oldItem) => {
+      const newKey = newItem.word + newItem.wordClass + newItem.level;
+      const oldKey = oldItem.word + oldItem.wordClass + oldItem.level;
+      if (newKey === oldKey) {
+        return newItem;
+      } else {
+        return oldItem;
+      }
+    });
+    props.setItems(newItems);
+  };
   const tbodyInner = props.items.map((item: WordListItem) => {
+    let visible = true;
+    if (!item.word.startsWith(props.keyword)) visible = false;
+    if (!props.isVisibleReadItem && item.read) visible = false;
+    if (!props.isVisibleGotItem && item.got) visible = false;
     return (
       <WordListItemTableRecord
         key={item.word + item.wordClass + item.level}
@@ -94,6 +204,8 @@ const WordListTable = (props: WordListTableProps) => {
         read={item.read}
         got={item.got}
         count={item.count}
+        visible={visible}
+        setItem={setItem}
       />
     );
   });
@@ -115,27 +227,30 @@ const WordListTable = (props: WordListTableProps) => {
   );
 };
 
-// TODO: use one in type.ts
-type WordListItemProps = WordListItem;
+type WordListItemProps = WordListItem & {
+  visible: boolean;
+  setItem: (item: WordListItem) => void;
+};
 
 const WordListItemTableRecord = (props: WordListItemProps) => {
-  const [item, setItem] = useState<WordListItem>({ ...props });
+  if (!props.visible) {
+    return <></>;
+  }
   const onChangeItem = (item: WordListItem) => {
-    setItem(item);
-    saveDiffOfWordList(item);
+    props.setItem(item);
   };
   const onChangeReadStatus = (read: boolean) => {
-    const newItem = { ...item };
+    const newItem: WordListItem = { ...props };
     newItem.read = read;
     onChangeItem(newItem);
   };
   const onChangeGotStatus = (got: boolean) => {
-    const newItem = { ...item };
+    const newItem: WordListItem = { ...props };
     newItem.got = got;
     onChangeItem(newItem);
   };
   const onClickLink = () => {
-    const newItem = { ...item };
+    const newItem: WordListItem = { ...props };
     newItem.read = true;
     newItem.count++;
     onChangeItem(newItem);
@@ -143,28 +258,28 @@ const WordListItemTableRecord = (props: WordListItemProps) => {
   return (
     <tr>
       <td>
-        <a href={item.link} target="_blank" onClick={() => onClickLink()}>
+        <a href={props.link} target="_blank" onClick={() => onClickLink()}>
           {props.word}
         </a>
       </td>
       <td className="WordListInteraction">
-        <span className="CefrDecoration">{item.level}</span>
+        <span className="CefrDecoration">{props.level}</span>
       </td>
       <td className="WordListInteraction">
         <input
           type="checkbox"
-          checked={item.read}
+          checked={props.read}
           onChange={(e) => onChangeReadStatus(e.target.checked)}
         />
       </td>
       <td className="WordListInteraction">
         <input
           type="checkbox"
-          checked={item.got}
+          checked={props.got}
           onChange={(e) => onChangeGotStatus(e.target.checked)}
         />
       </td>
-      <td className="WordListInteraction">{item.count}</td>
+      <td className="WordListInteraction">{props.count}</td>
     </tr>
   );
 };
@@ -200,18 +315,6 @@ const getOriginWordListItemsAsnc = async (): Promise<WordListItem[]> => {
   }
 };
 
-const saveDiffOfWordList = (newItem: WordListItem) => {
-  const items = JSON.parse(localStorage.getItem("items") ?? "");
-  const newItems = items.map((oldItem: WordListItem) => {
-    if (
-      oldItem.word === newItem.word &&
-      oldItem.wordClass === newItem.wordClass &&
-      oldItem.level === newItem.level
-    ) {
-      return newItem;
-    } else {
-      return oldItem;
-    }
-  });
+const saveWordList = (newItems: WordListItem[]) => {
   localStorage.setItem("items", JSON.stringify(newItems));
 };
