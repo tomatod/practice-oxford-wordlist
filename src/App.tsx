@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { MarkGithubIcon } from "@primer/octicons-react";
 import "./App.css";
 import { WordListItem } from "../type/type";
@@ -155,45 +155,39 @@ type WordListTableProps = {
 };
 
 const getNewItems = (() => {
-	let items = [];
-	return (newItems?: WordListItem[], newItem?: WordListItem) => {
-		if(newItems !== undefined) {
-			items = ni;
-			return items;
-		}
-		if(newItem !== undefined) {
-			items = props.items.map((oldItem) => {
-				const newKey = newItem.word + newItem.wordClass + newItem.level;
-				const oldKey = oldItem.word + oldItem.wordClass + oldItem.level;
-				if(newKey === oldKey) {
-					return newItem;
-				} else {
-					return oldItem;
-				}
-			});
-			return items;	
-		}
-		return items;
-	};
+  let items: WordListItem[] = [];
+  return (newItems: WordListItem[] | null, newItem: WordListItem | null) => {
+    if (newItems !== null) {
+      items = newItems;
+      return items;
+    }
+    if (newItem !== null) {
+      items = items.map((oldItem) => {
+        const newKey = newItem.word + newItem.wordClass + newItem.level;
+        const oldKey = oldItem.word + oldItem.wordClass + oldItem.level;
+        if (newKey === oldKey) {
+          return newItem;
+        } else {
+          return oldItem;
+        }
+      });
+      return items;
+    }
+    return items;
+  };
 })();
+
 const WordListTable = (props: WordListTableProps) => {
+  getNewItems(props.items, null);
   const setItem = (newItem: WordListItem) => {
-    const newItems = props.items.map((oldItem) => {
-      const newKey = newItem.word + newItem.wordClass + newItem.level;
-      const oldKey = oldItem.word + oldItem.wordClass + oldItem.level;
-      if (newKey === oldKey) {
-        return newItem;
-      } else {
-        return oldItem;
-      }
-    });
+    const newItems = getNewItems(null, newItem);
     props.setItems(newItems);
   };
   const tbodyInner = props.items.map((item: WordListItem) => {
-    let visible = true;
-    if (!item.word.startsWith(props.keyword)) visible = false;
-    if (!props.isVisibleReadItem && item.read) visible = false;
-    if (!props.isVisibleGotItem && item.got) visible = false;
+    let isVisible = true;
+    if (!item.word.startsWith(props.keyword)) isVisible = false;
+    if (!props.isVisibleReadItem && item.read) isVisible = false;
+    if (!props.isVisibleGotItem && item.got) isVisible = false;
     return (
       <WordListItemTableRecord
         key={item.word + item.wordClass + item.level}
@@ -204,7 +198,7 @@ const WordListTable = (props: WordListTableProps) => {
         read={item.read}
         got={item.got}
         count={item.count}
-        visible={visible}
+        isVisible={isVisible}
         setItem={setItem}
       />
     );
@@ -228,12 +222,23 @@ const WordListTable = (props: WordListTableProps) => {
 };
 
 type WordListItemProps = WordListItem & {
-  visible: boolean;
+  isVisible: boolean;
   setItem: (item: WordListItem) => void;
 };
 
-const WordListItemTableRecord = (props: WordListItemProps) => {
-  if (!props.visible) {
+const areWordListItemPropsEqual = (
+  oldProps: WordListItemProps,
+  newProps: WordListItemProps,
+) => {
+  return (
+    oldProps.read === newProps.read &&
+    oldProps.got === newProps.got &&
+    oldProps.isVisible === newProps.isVisible
+  );
+};
+
+const WordListItemTableRecord = memo((props: WordListItemProps) => {
+  if (!props.isVisible) {
     return <></>;
   }
   const onChangeItem = (item: WordListItem) => {
@@ -282,7 +287,7 @@ const WordListItemTableRecord = (props: WordListItemProps) => {
       <td className="WordListInteraction">{props.count}</td>
     </tr>
   );
-};
+}, areWordListItemPropsEqual);
 
 /**
 	Functions for getting and saving word list.
